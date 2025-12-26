@@ -14,24 +14,43 @@ It is based on the **Ames Housing Dataset** and includes:
 ## 📂 Project Structure
 
 House-Price-Prediction/
+
 │
+
 ├── data/
+
 │   ├── train.csv
+
 │   ├── test.csv
+
 │   └── testAns.csv
+
 │
+
 ├── src/
+
 │   ├── dataCleaner.py
+
 │   ├── featureEnginer.py
+
 │   ├── encodingData.py
+
 │   ├── dataManipulation.py
+
 │   ├── data_splitter.py
+
 │   ├── standardization.py
+
 │   ├── LinearRegression.py
+
 │   └── model.py
+
 │
+
 ├── requirements.txt
+
 ├── README.md
+
 ├── .gitignore
 
 ## 🚀 Features
@@ -74,6 +93,6 @@ House-Price-Prediction/
 >>> pip install -r requirements.txt
 
 >>> python src/model.py
-
+```
 data/testAns.csv will be generated
 
