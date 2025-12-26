@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Data outputs
+data/testAns.csv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
