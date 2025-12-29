@@ -16,6 +16,15 @@ class LinearRegressionCustom:
         wait = 0
 
         for epoch in range(1, self.epochs + 1):
+        
+            ## Try to improve result by reducing numercial round off error 
+            # # Gradient Descent
+            # self.w -= self.lr * ((1 / m) * (X.T @ ((X @ self.w) - y.values)))
+
+            # # Losses
+            # train_loss = (((X @ self.w) - y.values) ** 2).mean()
+            # val_loss = ((X_val @ self.w - y_val.values) ** 2).mean()
+
             # Predicting
             preds = X @ self.w
             error = preds - y.values
