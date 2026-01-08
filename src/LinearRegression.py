@@ -2,8 +2,9 @@ import numpy as np
 
 class LinearRegressionCustom:
 
-    def __init__(self, lr=0.01, epochs=1000, patience=10, verbose=True):
+    def __init__(self, lr=0.01, rp=0, epochs=1000, patience=10, verbose=True):
         self.lr = lr
+        self.rp = rp
         self.epochs = epochs
         self.patience = patience
         self.verbose = verbose
@@ -32,8 +33,8 @@ class LinearRegressionCustom:
             # Gradient
             grad = (1 / m) * (X.T @ error)
 
-            # Gradient Descent
-            self.w -= self.lr * grad
+            # Gradient Descent 
+            self.w -= (self.lr * (grad+ (self.rp*self.w))) ## Along with regularization(with 0<rp<=0.00001, it have same result as when rp = 0) 
 
             # Losses
             train_loss = (error ** 2).mean()

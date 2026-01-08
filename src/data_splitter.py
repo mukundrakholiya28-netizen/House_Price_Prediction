@@ -1,6 +1,14 @@
 import numpy as np
+import pandas as pd
 
 def split(df, validate_size=0.2, random_state=42):
+
+    ## Adding more samples to improve the prediction
+    df=pd.concat([df,df],ignore_index=True)
+    df=pd.concat([df,df],ignore_index=True)
+    df=pd.concat([df,df],ignore_index=True)
+    df=pd.concat([df,df],ignore_index=True)
+    
     df = df.sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     split_idx = int((1 - validate_size) * len(df))

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+from xgboost import XGBRegressor 
 
 import dataManipulation as dm
 import data_splitter as ds
@@ -15,24 +16,21 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 # 1. Get the path of the current script (model.py)
 script_dir = os.path.dirname(__file__) 
-
 # 2. Go up one level to the root (House-Price-Prediction)
 root_dir = os.path.join(script_dir, '..')
-
 # 3. Point to the data file
 data_path = os.path.join(root_dir, 'data', 'train.csv')
-
 # 4. Load the dataframe
 df = pd.read_csv(data_path)
 
 # 1 Clean & manipulate FIRST
 df = dm.manipulateData(df)
-
 # Save feature structure
 FEATURE_COLUMNS = df.drop(['SalePrice', 'Id'], axis=1).columns
 
 # 2️ Split
 X_train, y_train, X_val, y_val = ds.split(df)
+
 
 # 3 Standardize (TRAIN stats only)
 scaler = Standardizer()
@@ -47,9 +45,23 @@ X_val = np.c_[np.ones(len(X_val)), X_val.values]
 model = LinearRegressionCustom()
 model.fit(X_train, y_train, X_val, y_val)
 
+## Traininf model using XGBoost
+# model=XGBRegressor()
+# model.fit(X_train,y_train)
+
 # ======================
 # OPTIONAL EVALUATION
 # ======================
+print("Training results\n")
+preds = model.predict(X_train)
+rmse = np.sqrt(mean_squared_error(y_train, preds))
+r2 = r2_score(y_train, preds)
+print(f"R2   : {r2:.4f}")
+print(f"RMSE : {rmse:.4f}")
+
+print("")
+
+print("Cross Validation Results\n")
 preds = model.predict(X_val)
 rmse = np.sqrt(mean_squared_error(y_val, preds))
 r2 = r2_score(y_val, preds)
@@ -60,32 +72,45 @@ print(f"RMSE : {rmse:.4f}")
 # TEST / UNKNOWN DATA
 # ======================
 
-# df2 = pd.read_csv("data/test.csv")
+# 1. Get the path of the current script (model.py)
+script_dir = os.path.dirname(__file__) 
+# 2. Go up one level to the root (House-Price-Prediction)
+root_dir = os.path.join(script_dir, '..')
+# 3. Point to the data file
+data_path = os.path.join(root_dir, 'data', 'test.csv')
+df2 = pd.read_csv(data_path)
 
-# # Same preprocessing
-# df2 = dm.manipulateData(df2)
+# Same preprocessing
+df2 = dm.manipulateData(df2)
+X_test = df2.drop(['Id'], axis=1)
 
-# X_test = df2.drop(['Id'], axis=1)
+#  ALIGN FEATURES (MOST IMPORTANT LINE)
+X_test = X_test.reindex(columns=FEATURE_COLUMNS, fill_value=0)
 
-# #  ALIGN FEATURES (MOST IMPORTANT LINE)
-# X_test = X_test.reindex(columns=FEATURE_COLUMNS, fill_value=0)
+# Use TRAIN scaler
+X_test = scaler.transform(X_test)
 
-# # Use TRAIN scaler
-# X_test = scaler.transform(X_test)
+# Add bias
+X_test = np.c_[np.ones(len(X_test)), X_test.values]
 
-# # Add bias
-# X_test = np.c_[np.ones(len(X_test)), X_test.values]
+# Predict
+predictions = model.predict(X_test)
 
-# # Predict
-# predictions = model.predict(X_test)
+# Reverse log transform
+predictions = np.expm1(predictions)
 
-# # Reverse log transform
-# predictions = np.expm1(predictions)
+# Save submission
 
-# # Save submission
-# pd.DataFrame({
-#     "Id": df2["Id"],
-#     "SalePrice": predictions
-# }).to_csv("data/testAns.csv", index=False)
+# 1. Get the path of the current script (model.py)
+script_dir = os.path.dirname(__file__) 
+# 2. Go up one level to the root (House-Price-Prediction)
+root_dir = os.path.join(script_dir, '..')
+# 3. Point to the data file
+data_path = os.path.join(root_dir, 'data', 'testAns.csv')
 
-# print("testAns.csv generated successfully")
+pd.DataFrame({
+    "Id": df2["Id"],
+    "SalePrice": predictions
+}).to_csv(data_path, index=False)
+
+print("testAns.csv generated successfully")
